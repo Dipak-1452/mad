@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+    <!-- Label for the EditText -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task:"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp" />
+    <!-- EditText for entering a task -->
+    <EditText
+        android:id="@+id/taskInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Task"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray" />
+    <!-- Button to add a new task -->
+    <Button
+        android:id="@+id/addTaskButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Task"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"
+         />
+    <!-- RecyclerView to display the task list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/taskRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:scrollbars="vertical"
+        android:background="@android:color/white"
+         />
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+package com.example.second;
+
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+    EditText taskInput;
+    Button addTaskButton;
+    RecyclerView taskRecyclerView;
+    TaskAdapter adapter;
+    List<String> taskList = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        taskInput = findViewById(R.id.taskInput);
+        addTaskButton = findViewById(R.id.addTaskButton);
+        taskRecyclerView = findViewById(R.id.taskRecyclerView);
+
+        adapter = new TaskAdapter(taskList);
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        taskRecyclerView.setAdapter(adapter);
+
+        addTaskButton.setOnClickListener(v -> {
+            String task = taskInput.getText().toString().trim();
+            if (!task.isEmpty()) {
+                taskList.add(task);
+                adapter.notifyItemInserted(taskList.size() - 1);
+                taskInput.setText("");
+            }
+        });
+    }
+}
+
+// Adapter class (short)
+class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
+    List<String> tasks;
+
+    TaskAdapter(List<String> tasks) {
+        this.tasks = tasks;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        TextView textView = new TextView(parent.getContext());
+        textView.setPadding(20, 20, 20, 20);
+        textView.setTextSize(18);
+        return new ViewHolder(textView);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.textView.setText(tasks.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return tasks.size();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
+        ViewHolder(View view) {
+            super(view);
+            textView = (TextView) view;
+        }
+    }
+}
